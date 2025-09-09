@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mi Perfil - Pizzeria El Sinú</title>
+  <link rel="stylesheet" href="css/estilos.css" />
+  <link rel="stylesheet" href="css/profile.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Iconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <header class="main-header">
+    <div class="container">
+      <nav class="main-nav">
+        <a href="index.html" class="logo">
+          <img src="img/gato_piza-removebg-preview.png" alt="Logo Pizzería" />
+        </a>
+        <ul>
+          <li><a href="index.html">INICIO</a></li>
+          <li><a href="#">HISTORIAL</a></li>
+          <li id="auth-link">
+            <!-- Se actualizará con JavaScript -->
+          </li>
+          <li id="cart-nav-item" style="display: none;">
+            <a href="#" class="cart-icon" id="cart-button">
+              <i class="fas fa-shopping-cart"></i>
+              <span class="cart-count">0</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="profile-main">
+    <div class="profile-container">
+      <div class="profile-header">
+        <div class="profile-avatar" id="userAvatar">U</div>
+        <div class="profile-info">
+          <h2 id="userName">Usuario</h2>
+          <p>Miembro desde <span id="memberSince">Enero 2023</span></p>
+        </div>
+      </div>
+      
+      <div class="profile-details">
+        <div class="detail-card">
+          <h3><i class="fas fa-user"></i> Información Personal</h3>
+          <div class="detail-item">
+            <span class="detail-label">Nombre:</span>
+            <span id="userFullName">Usuario Ejemplo</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Email:</span>
+            <span id="userEmail">usuario@ejemplo.com</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Teléfono:</span>
+            <span id="userPhone">+57 300 123 4567</span>
+          </div>
+          <button class="edit-btn">
+            <i class="fas fa-edit"></i> Editar Información
+          </button>
+        </div>
+        
+        <div class="detail-card">
+          <h3><i class="fas fa-map-marker-alt"></i> Dirección de Entrega</h3>
+          <div class="detail-item">
+            <span class="detail-label">Dirección:</span>
+            <span>Calle 123 #45-67</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Barrio:</span>
+            <span>El Centro</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Ciudad:</span>
+            <span>Montería, Córdoba</span>
+          </div>
+          <button class="edit-btn">
+            <i class="fas fa-edit"></i> Editar Dirección
+          </button>
+        </div>
+      </div>
+      
+      <div class="detail-card orders-card">
+        <h3><i class="fas fa-history"></i> Historial de Pedidos</h3>
+        <div class="orders-filter">
+          <button class="filter-btn active">Todos</button>
+          <button class="filter-btn">Este mes</button>
+          <button class="filter-btn">Últimos 3 meses</button>
+        </div>
+        
+        <div class="orders-list">
+          <div class="order-item">
+            <div class="order-header">
+              <span class="order-id">#ORD-00123</span>
+              <span class="order-date">15 Feb 2023</span>
+              <span class="order-status delivered">Entregado</span>
+            </div>
+            <div class="order-details">
+              <div class="order-pizza">
+                <span class="pizza-name">Pizza Mediterránea</span>
+                <span class="pizza-price">$32.000</span>
+              </div>
+              <div class="order-pizza">
+                <span class="pizza-name">Refresco 1.5L</span>
+                <span class="pizza-price">$5.000</span>
+              </div>
+            </div>
+            <div class="order-total">
+              <strong>Total: $37.000</strong>
+            </div>
+          </div>
+          
+          <div class="order-item">
+            <div class="order-header">
+              <span class="order-id">#ORD-00119</span>
+              <span class="order-date">10 Feb 2023</span>
+              <span class="order-status delivered">Entregado</span>
+            </div>
+            <div class="order-details">
+              <div class="order-pizza">
+                <span class="pizza-name">Pizza de Peperoni</span>
+                <span class="pizza-price">$30.000</span>
+              </div>
+            </div>
+            <div class="order-total">
+              <strong>Total: $30.000</strong>
+            </div>
+          </div>
+          
+          <div class="order-item">
+            <div class="order-header">
+              <span class="order-id">#ORD-00105</span>
+              <span class="order-date">5 Feb 2023</span>
+              <span class="order-status delivered">Entregado</span>
+            </div>
+            <div class="order-details">
+              <div class="order-pizza">
+                <span class="pizza-name">Pizza Margarita</span>
+                <span class="pizza-price">$28.000</span>
+              </div>
+              <div class="order-pizza">
+                <span class="pizza-name">Pan de Ajo</span>
+                <span class="pizza-price">$8.000</span>
+              </div>
+            </div>
+            <div class="order-total">
+              <strong>Total: $36.000</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>WE LOVE PIZZA • WE LOVE FAST FOOD • WE LOVE PIZZA</p>
+  </footer>
+
+  <!-- Incluir archivos JavaScript -->
+  <script src="js/auth.js"></script>
+  <script src="js/profile.js"></script>
+</body>
+</html>

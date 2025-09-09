@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registro - Pizzeria El Sinú</title>
+  <link rel="stylesheet" href="css/login.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="contenedor">
+    <div class="logo-section">
+      <img src="img/gato_piza-removebg-preview.png" alt="Logo Pizzeria El Sinú" class="pizza-img" />
+      <h1>Pizzeria El Sinú</h1>
+      <p>Únete a nuestra comunidad de amantes de la pizza</p>
+    </div>
+    
+    <div class="form-section">
+      <div class="form-container">
+        <div class="form-toggle">
+          <button class="toggle-btn" onclick="location.href='login.html'">Iniciar Sesión</button>
+          <button class="toggle-btn active">Registrarse</button>
+        </div>
+        
+        <div class="formulario">
+          <h2>Crear Cuenta</h2>
+          <p>Completa tus datos para registrarte</p>
+          
+          <form action="perfil.html" method="GET">
+            <div class="form-group">
+              <input type="text" name="nombre" placeholder="Nombre completo" required />
+            </div>
+            
+            <div class="form-group">
+              <input type="email" name="email" placeholder="Correo electrónico" required />
+            </div>
+            
+            <div class="form-group">
+              <input type="tel" name="telefono" placeholder="Teléfono" />
+            </div>
+            
+            <div class="form-group">
+              <input type="password" name="clave" placeholder="Contraseña" required />
+            </div>
+            
+            <div class="form-group">
+              <input type="password" name="confirmar_clave" placeholder="Confirmar contraseña" required />
+            </div>
+            
+            <div class="form-group">
+              <label class="checkbox-label">
+                <input type="checkbox" required />
+                <span>Acepto los <a href="#">términos y condiciones</a> y la <a href="#">política de privacidad</a></span>
+              </label>
+            </div>
+            
+            <button type="submit" class="btn-primary">Crear Cuenta</button>
+          </form>
+          
+          <div class="separator">
+            <span>¿Ya tienes cuenta?</span>
+          </div>
+          
+          <button class="btn-secondary" onclick="location.href='login.html'">
+            Iniciar Sesión
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

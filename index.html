@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pizzeria El Sinú</title>
+  <link rel="stylesheet" href="css/estilos.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Iconos para el carrito -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+   <header class="main-header">
+    <div class="container">
+      <nav class="main-nav">
+        <a href="index.html" class="logo">
+          <img src="img/gato_piza-removebg-preview.png" alt="Logo Pizzería" />
+        </a>
+        <ul>
+          <li><a href="index.html" class="active">INICIO</a></li>
+          <li><a href="about.html">NOSOTROS</a></li>
+          <li id="auth-link">
+            <a href="login.html" class="btn-login">INICIAR SESIÓN</a>
+          </li>
+          <li id="cart-nav-item" style="display: none;">
+            <a href="#" class="cart-icon" id="cart-button">
+              <i class="fas fa-shopping-cart"></i>
+              <span class="cart-count">0</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="hero-text">
+        <center><h1>Pizzeria<br><span>El Sinú</span></h1></center>
+      </div>
+      <div class="creator-cta">
+        <a href="crear-pizza.html" class="btn-creator">
+          <i class="fas fa-plus-circle"></i> Crear Tu Pizza Personalizada
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <section class="menu">
+    <div class="item">
+      <img src="./img/pizzaMediterranea.jpg" alt="Mediterranean Pizza" />
+      <h3>Pizza Mediterranea</h3>
+      <p>Una combinación vibrante de sabores del Mediterráneo: aceitunas negras, tomates secos, pimientos, cebolla morada y queso feta, todo sobre una base de salsa de tomate y hierbas aromáticas.</p>
+      <button class="add-to-cart" data-id="1" data-name="Pizza Mediterranea" data-price="32000">Add to Cart</button>
+    </div>
+    <div class="item">
+      <img src="./img/Mortadella & Basil Bliss.jpg" alt="Mortadella Pizza" />
+      <h3>Pizza Margarita</h3>
+      <p>Una clásica y sencilla delicia italiana hecha con salsa de tomate, mozzarella fresca y hojas de albahaca, que destaca por su frescura y sabor auténtico. </p>
+      <button class="add-to-cart" data-id="2" data-name="Pizza Margarita" data-price="28000">Add to Cart</button>
+    </div>
+    <div class="item">
+      <img src="./img/pizzaPeperoni.jpg" alt="Mushroom Pizza" />
+      <h3>Pizza de Peperoni</h3>
+      <p>Una de las favoritas del mundo, con una base de salsa de tomate, generosa mozzarella derretida y abundantes rodajas de peperoni crujiente y ligeramente picante.</p>
+      <button class="add-to-cart" data-id="3" data-name="Pizza de Peperoni" data-price="30000">Add to Cart</button>
+    </div>
+  </section>
+
+  <!-- Carrito de compras -->
+  <div class="cart-overlay" id="cart-overlay">
+    <div class="cart-container">
+      <div class="cart-header">
+        <h2>Tu Carrito de Compras</h2>
+        <button class="close-cart" id="close-cart">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="cart-items" id="cart-items">
+        
+        <div class="empty-cart-message">
+          <i class="fas fa-shopping-cart"></i>
+          <p>Tu carrito está vacío</p>
+        </div>
+      </div>
+      <div class="cart-total">
+        <h3>Total: <span id="cart-total-price">$0</span></h3>
+        <button class="checkout-btn" id="checkout-btn">Realizar Pedido</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>WE LOVE PIZZA • WE LOVE FAST FOOD • WE LOVE PIZZA</p>
+  </footer>
+
+  <script src="js/auth.js"></script>
+  <script src="js/cart.js"></script>
+</body>
+</html>

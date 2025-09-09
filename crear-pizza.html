@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Crear Tu Pizza - Pizzeria El Sinú</title>
+  <link rel="stylesheet" href="css/estilos.css" />
+  <link rel="stylesheet" href="css/crear-pizza.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <header class="main-header">
+    <div class="container">
+      <nav class="main-nav">
+        <a href="index.html" class="logo">
+          <img src="img/gato_piza-removebg-preview.png" alt="Logo Pizzería" />
+        </a>
+        <ul>
+          <li><a href="index.html">INICIO</a></li>
+          <li><a href="about.html">NOSOTROS</a></li>
+          <li><a href="#">CONTACTO</a></li>
+          <li id="auth-link">
+            <!-- Se actualizará con JavaScript -->
+          </li>
+          <li id="cart-nav-item" style="display: none;">
+            <a href="#" class="cart-icon" id="cart-button">
+              <i class="fas fa-shopping-cart"></i>
+              <span class="cart-count">0</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="pizza-creator">
+    <div class="creator-container">
+      <h1>CREA TU PIZZA PERSONALIZADA</h1>
+      <p class="creator-subtitle">Selecciona tus ingredientes favoritos y crea la pizza perfecta</p>
+      
+      <div class="creator-content">
+        <!-- Panel de ingredientes -->
+        <div class="ingredients-panel">
+          <h2>Ingredientes</h2>
+          <div class="ingredients-list">
+            <!-- Salsas -->
+            <div class="ingredient-category">
+              <h3>Salsas</h3>
+              <div class="ingredient-items">
+                <div class="ingredient-item" data-ingredient="salsa-tomate" data-price="2000">
+                  <img src="img/ingredientes/salsa-tomate.png" alt="Salsa de Tomate">
+                  <span>Salsa de Tomate</span>
+                  <span class="ingredient-price">+$2.000</span>
+                </div>
+                <div class="ingredient-item" data-ingredient="salsa-bbq" data-price="2500">
+                  <img src="img/ingredientes/salsa-bbq.png" alt="Salsa BBQ">
+                  <span>Salsa BBQ</span>
+                  <span class="ingredient-price">+$2.500</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quesos -->
+            <div class="ingredient-category">
+              <h3>Quesos</h3>
+              <div class="ingredient-items">
+                <div class="ingredient-item" data-ingredient="queso-mozzarella" data-price="3000">
+                  <img src="img/ingredientes/queso-mozzarella.png" alt="Queso Mozzarella">
+                  <span>Queso Mozzarella</span>
+                  <span class="ingredient-price">+$3.000</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Proteínas -->
+            <div class="ingredient-category">
+              <h3>Proteínas</h3>
+              <div class="ingredient-items">
+                <div class="ingredient-item" data-ingredient="pepperoni" data-price="3500">
+                  <img src="img/ingredientes/pepperoni.png" alt="Pepperoni">
+                  <span>Pepperoni</span>
+                  <span class="ingredient-price">+$3.500</span>
+                </div>
+                <div class="ingredient-item" data-ingredient="jamon" data-price="3000">
+                  <img src="img/ingredientes/jamon.png" alt="Jamón">
+                  <span>Jamón</span>
+                  <span class="ingredient-price">+$3.000</span>
+                </div>
+                <div class="ingredient-item" data-ingredient="pollo" data-price="3200">
+                  <img src="img/ingredientes/pollo.png" alt="Pollo">
+                  <span>Pollo</span>
+                  <span class="ingredient-price">+$3.200</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Vegetales -->
+            <div class="ingredient-category">
+              <h3>Vegetales</h3>
+              <div class="ingredient-items">
+                <div class="ingredient-item" data-ingredient="champinones" data-price="2000">
+                  <img src="img/ingredientes/champinones.png" alt="Champiñones">
+                  <span>Champiñones</span>
+                  <span class="ingredient-price">+$2.000</span>
+                </div>
+                <div class="ingredient-item" data-ingredient="pimiento" data-price="1800">
+                  <img src="img/ingredientes/pimiento.png" alt="Pimiento">
+                  <span>Pimiento</span>
+                  <span class="ingredient-price">+$1.800</span>
+                </div>
+                <div class="ingredient-item" data-ingredient="cebolla" data-price="1700">
+                  <img src="img/ingredientes/cebolla.png" alt="Cebolla">
+                  <span>Cebolla</span>
+                  <span class="ingredient-price">+$1.700</span>
+                </div>
+                <div class="ingredient-item" data-ingredient="aceitunas" data-price="2200">
+                  <img src="img/ingredientes/aceitunas.png" alt="Aceitunas">
+                  <span>Aceitunas</span>
+                  <span class="ingredient-price">+$2.200</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Área de la pizza -->
+        <div class="pizza-area">
+          <div class="pizza-base" id="pizza-base">
+            <img src="img/pizza-base.png" alt="Pizza Base">
+            <!-- Los ingredientes se añadirán dinámicamente aquí -->
+          </div>
+          
+          <div class="pizza-controls">
+            <div class="price-display">
+              <h3>Total: <span id="pizza-total">$15.000</span></h3>
+              <p class="base-price">Pizza base: $15.000</p>
+            </div>
+            
+            <div class="action-buttons">
+              <button id="reset-pizza" class="btn-secondary">
+                <i class="fas fa-redo"></i> Empezar de Nuevo
+              </button>
+              <button id="add-to-cart" class="btn-primary" disabled>
+                <i class="fas fa-shopping-cart"></i> Añadir al Carrito - $15.000
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ingredientes seleccionados -->
+        <div class="selected-ingredients">
+          <h2>Tu Selección</h2>
+          <div class="selected-list" id="selected-list">
+            <p class="empty-selection">Aún no has seleccionado ingredientes</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Incluir archivos JavaScript -->
+  <script src="js/auth.js"></script>
+  <script src="js/crear-pizza.js"></script>
+</body>
+</html>
