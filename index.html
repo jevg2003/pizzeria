@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Pizzeria El Sinú</title>
+  <link rel="icon" href="img/gato_piza-removebg-preview.png" type="image/png">
   <link rel="stylesheet" href="css/estilos.css" />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
   <!-- Iconos para el carrito -->
@@ -19,6 +20,7 @@
         <ul>
           <li><a href="index.html" class="active">INICIO</a></li>
           <li><a href="about.html">NOSOTROS</a></li>
+          <li><a href="crear-pizza.html">CREAR PIZZA</a></li>
           <li id="auth-link">
             <a href="login.html" class="btn-login">INICIAR SESIÓN</a>
           </li>
@@ -31,13 +33,15 @@
         </ul>
       </nav>
 
-      <div class="hero-text">
-        <center><h1>Pizzeria<br><span>El Sinú</span></h1></center>
-      </div>
-      <div class="creator-cta">
-        <a href="crear-pizza.html" class="btn-creator">
-          <i class="fas fa-plus-circle"></i> Crear Tu Pizza Personalizada
-        </a>
+      <div class="hero-section">
+        <div class="hero-content">
+          <div class="hero-text">
+            <h1>Pizzeria<br><span>El Sinú</span></h1>
+          </div>
+          <a href="crear-pizza.html" class="pizza-creator-image">
+            <img src="img/crea-pizza.png" alt="Crear Tu Pizza Personalizada">
+          </a>
+        </div>
       </div>
     </div>
   </header>

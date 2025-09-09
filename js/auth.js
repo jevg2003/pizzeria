@@ -24,6 +24,7 @@ function checkAuthStatus() {
 
 // Función para cerrar sesión
 function logout() {
+    localStorage.removeItem('pizzeriaDraftPizza');
     localStorage.removeItem('pizzeriaUser');
     localStorage.removeItem('cartItems');
     if (typeof updateCartCount === 'function') updateCartCount(0);

@@ -39,8 +39,16 @@ document.addEventListener('DOMContentLoaded', function() {
             // Guardar en localStorage
             localStorage.setItem('pizzeriaUser', JSON.stringify(userData));
             
-            // Mostrar mensaje de éxito con redirección automática
-            showModal('¡Éxito!', '¡Inicio de sesión exitoso! Bienvenido a Pizzeria El Sinú', 'success', true);
+            // Verificar si hay una pizza en borradores
+            const hasPizzaDraft = localStorage.getItem('pizzeriaDraftPizza');
+            
+            if (hasPizzaDraft) {
+                // Redirigir a crear-pizza para recuperar la pizza
+                showModal('¡Éxito!', '¡Inicio de sesión exitoso! Tu pizza personalizada ha sido recuperada.', 'success', true, 'crear-pizza.html');
+            } else {
+                // Redirigir a la página principal
+                showModal('¡Éxito!', '¡Inicio de sesión exitoso! Bienvenido a Pizzeria El Sinú', 'success', true, 'index.html');
+            }
         });
     }
     
@@ -66,8 +74,8 @@ document.addEventListener('DOMContentLoaded', function() {
     setupModal();
 });
 
-// Función para mostrar modal personalizado
-function showModal(title, message, type = 'info', redirect = false) {
+// Función para mostrar modal personalizado (modificada para aceptar URL personalizada)
+function showModal(title, message, type = 'info', redirect = false, redirectUrl = 'index.html') {
     // Crear o obtener el modal
     let modal = document.getElementById('custom-modal');
     
@@ -131,8 +139,10 @@ function showModal(title, message, type = 'info', redirect = false) {
     // Si es éxito y debe redirigir, configurar el botón
     if (redirect) {
         modalOkBtn.onclick = function() {
-            window.location.href = 'index.html';
+            window.location.href = redirectUrl;
         };
+    } else {
+        modalOkBtn.onclick = closeModal;
     }
 }
 

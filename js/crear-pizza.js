@@ -3,12 +3,15 @@ class PizzaCreator {
         this.basePrice = 15000;
         this.selectedIngredients = [];
         this.totalPrice = this.basePrice;
+        this.pizzaKey = 'pizzeriaDraftPizza';
         
         this.init();
     }
+
     
     init() {
         this.setupEventListeners();
+        this.loadPizzaDraft();
         this.updateUI();
     }
     
@@ -24,6 +27,42 @@ class PizzaCreator {
         
         // Verificar autenticación
         this.checkAuth();
+    }
+
+    savePizzaDraft() {
+        const pizzaDraft = {
+            ingredients: this.selectedIngredients,
+            totalPrice: this.totalPrice,
+            timestamp: new Date().toISOString()
+        };
+        localStorage.setItem(this.pizzaKey, JSON.stringify(pizzaDraft));
+    }
+
+    loadPizzaDraft() {
+        const savedPizza = localStorage.getItem(this.pizzaKey);
+        if (savedPizza) {
+            try {
+                const pizzaDraft = JSON.parse(savedPizza);
+                
+                // Verificar si el borrador es muy viejo (24 horas)
+                const draftDate = new Date(pizzaDraft.timestamp);
+                const now = new Date();
+                const hoursDiff = (now - draftDate) / (1000 * 60 * 60);
+                
+                if (hoursDiff > 24) {
+                    localStorage.removeItem(this.pizzaKey);
+                    return;
+                }
+                
+                this.selectedIngredients = pizzaDraft.ingredients || [];
+                this.totalPrice = pizzaDraft.totalPrice || this.basePrice;
+                this.updateUI();
+                this.showMessage('Pizza recuperada de tu última sesión', 'info');
+            } catch (error) {
+                console.error('Error al cargar pizza guardada:', error);
+                localStorage.removeItem(this.pizzaKey);
+            }
+        }
     }
     
     addIngredient(event) {
@@ -43,6 +82,7 @@ class PizzaCreator {
             price: price,
             displayName: ingredientItem.querySelector('span:first-of-type').textContent
         });
+        this.savePizzaDraft();
         
         // Actualizar precio
         this.totalPrice += price;
@@ -66,6 +106,7 @@ class PizzaCreator {
             
             // Remover ingrediente
             this.selectedIngredients.splice(ingredientIndex, 1);
+            this.savePizzaDraft();
             
             // Actualizar UI
             this.updateUI();
@@ -76,6 +117,7 @@ class PizzaCreator {
         this.selectedIngredients = [];
         this.totalPrice = this.basePrice;
         this.updateUI();
+        localStorage.removeItem(this.pizzaKey);
         this.showMessage('Pizza reiniciada', 'success');
     }
     
@@ -179,6 +221,7 @@ class PizzaCreator {
             setTimeout(() => {
                 window.location.href = 'index.html';
             }, 1500);
+            localStorage.removeItem(this.pizzaKey);
             
         } catch (error) {
             this.showMessage('Error al añadir al carrito', 'error');
@@ -219,13 +262,33 @@ class PizzaCreator {
     }
     
     showLoginModal() {
-        // Usar el modal de login existente o crear uno
-        if (typeof showLoginModal === 'function') {
-            showLoginModal();
-        } else {
-            alert('Por favor inicia sesión para añadir pizzas personalizadas al carrito');
-            window.location.href = 'login.html';
-        }
+        this.savePizzaDraft();
+        Swal.fire({
+            title: '¡Falta poco!',
+            html: '<div style="color: #fada08; font-size: 3rem; margin: 10px 0;">🍕</div>' +
+                '<h3 style="color: #fada08; font-family: \'Montserrat\', sans-serif; font-weight: 700; margin-bottom: 10px;">Tu pizza personal está casi lista</h3>' +
+                '<p style="color: #e0e0e0; font-family: \'Montserrat\', sans-serif;">Inicia sesión para guardar tu creación y proceder al pago</p>',
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonColor: '#fada08',
+            cancelButtonColor: '#333',
+            confirmButtonText: '<span style="color: #000; font-weight: 600;">Iniciar Sesión</span>',
+            cancelButtonText: '<span style="color: #fff; font-weight: 500;">Seguir Personalizando</span>',
+            background: '#1a1a1a',
+            color: '#fff',
+            customClass: {
+                popup: 'custom-swal-popup',
+                title: 'custom-swal-title',
+                htmlContainer: 'custom-swal-html',
+                confirmButton: 'custom-swal-confirm',
+                cancelButton: 'custom-swal-cancel'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.savePizzaDraft();
+                window.location.href = 'login.html';
+            }
+        });
     }
     
     checkAuth() {

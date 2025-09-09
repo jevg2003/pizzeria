@@ -1,7 +1,7 @@
 .pizza-creator {
   padding: 2rem 1rem;
   min-height: calc(100vh - 200px);
-  background: linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9));
+  background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9));
 }
 
 .creator-container {
@@ -335,4 +335,141 @@
     width: 30px;
     height: 30px;
   }
+}
+
+/* Estilos para evitar que el texto se desborde */
+.selected-ingredient {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem;
+    background: var(--color-darker);
+    border-radius: 8px;
+    margin-bottom: 0.8rem;
+    border-left: 3px solid var(--color-primary);
+    overflow: hidden; /* Evita que el contenido se desborde */
+}
+
+.selected-ingredient span {
+    color: var(--color-text);
+    white-space: nowrap; /* Evita saltos de línea */
+    overflow: hidden; /* Oculta el texto que se desborda */
+    text-overflow: ellipsis; /* Muestra "..." cuando el texto es demasiado largo */
+    max-width: 70%; /* Limita el ancho máximo del nombre */
+}
+
+.selected-ingredient .ingredient-price {
+    color: var(--color-primary) !important;
+    font-weight: 600;
+    white-space: nowrap; /* Evita saltos de línea en el precio */
+    margin-left: 0.5rem; /* Espacio entre nombre y precio */
+}
+
+/* Ajustes para ingredientes en el panel lateral */
+.ingredient-item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.8rem;
+    background: var(--color-darker);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+    border: 1px solid transparent;
+    overflow: hidden; /* Evita desbordamiento */
+}
+
+.ingredient-item span:first-of-type {
+    flex: 1;
+    color: var(--color-text);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Ajustes responsivos adicionales */
+@media (max-width: 968px) {
+    .selected-ingredient span {
+        max-width: 60%;
+    }
+}
+
+@media (max-width: 480px) {
+    .selected-ingredient {
+        padding: 0.6rem;
+    }
+    
+    .selected-ingredient span {
+        max-width: 55%;
+        font-size: 0.9rem;
+    }
+    
+    .selected-ingredient .ingredient-price {
+        font-size: 0.9rem;
+    }
+    
+    .ingredient-item span:first-of-type {
+        font-size: 0.9rem;
+    }
+}
+
+/* Estilos personalizados para SweetAlert */
+.custom-swal-popup {
+    font-family: 'Montserrat', sans-serif !important;
+    border-radius: 12px !important;
+    border: 2px solid #fada08 !important;
+}
+
+.custom-swal-title {
+    color: #fada08 !important;
+    font-family: 'Montserrat', sans-serif !important;
+    font-weight: 800 !important;
+    font-size: 1.8rem !important;
+}
+
+.custom-swal-html {
+    color: #e0e0e0 !important;
+    font-family: 'Montserrat', sans-serif !important;
+}
+
+.custom-swal-confirm {
+    background: linear-gradient(135deg, #fada08, #e6c707) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    font-family: 'Montserrat', sans-serif !important;
+    font-weight: 600 !important;
+    padding: 10px 25px !important;
+}
+
+.custom-swal-confirm:hover {
+    background: linear-gradient(135deg, #e6c707, #d4b906) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 8px rgba(250, 218, 8, 0.3) !important;
+}
+
+.custom-swal-cancel {
+    background: #333 !important;
+    border: 1px solid #555 !important;
+    border-radius: 8px !important;
+    font-family: 'Montserrat', sans-serif !important;
+    font-weight: 500 !important;
+    padding: 10px 25px !important;
+}
+
+.custom-swal-cancel:hover {
+    background: #444 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Ajustar icono de SweetAlert */
+.swal2-icon.swal2-info {
+    border-color: #fada08 !important;
+    color: #fada08 !important;
+}
+
+.message-recovered {
+    background: linear-gradient(135deg, #ff9800, #f57c00) !important;
+    border-left: 4px solid #ff9800;
 }
