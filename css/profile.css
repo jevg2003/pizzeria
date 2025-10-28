@@ -1,4 +1,4 @@
-/* profile.css - Estilos específicos para la página de perfil */
+/* profile.css - Estilos mejorados para la página de perfil */
 
 .profile-main {
   padding: 2rem 1rem;
@@ -102,6 +102,62 @@
   background: rgba(250, 218, 8, 0.1);
 }
 
+/* Estilos para direcciones */
+.address-item {
+  background: rgba(35, 35, 35, 0.6);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-left: 4px solid #333;
+}
+
+.address-item.default-address {
+  border-left-color: #fada08;
+}
+
+.address-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.address-title {
+  color: #fff;
+  font-weight: 600;
+}
+
+.address-default {
+  background: #fada08;
+  color: #000;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+.address-details p {
+  margin: 0.3rem 0;
+  color: #ccc;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.no-address-message, .no-orders-message {
+  text-align: center;
+  padding: 2rem;
+  color: #888;
+}
+
+.no-address-message i, .no-orders-message i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: #555;
+}
+
+/* Estilos para pedidos */
 .orders-card {
   grid-column: 1 / -1;
 }
@@ -167,9 +223,34 @@
   font-weight: 600;
 }
 
+.order-status.pending {
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
+}
+
+.order-status.confirmed {
+  background: rgba(33, 150, 243, 0.2);
+  color: #2196f3;
+}
+
+.order-status.preparing {
+  background: rgba(156, 39, 176, 0.2);
+  color: #9c27b0;
+}
+
+.order-status.ready {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4caf50;
+}
+
 .order-status.delivered {
   background: rgba(76, 175, 80, 0.2);
   color: #4caf50;
+}
+
+.order-status.cancelled {
+  background: rgba(244, 67, 54, 0.2);
+  color: #f44336;
 }
 
 .order-details {
@@ -179,6 +260,7 @@
 .order-pizza {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 0.4rem 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -189,6 +271,22 @@
 
 .pizza-name {
   color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.custom-badge {
+  background: #ff6b6b;
+  color: white;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.6rem;
+  font-weight: bold;
+}
+
+.pizza-quantity {
+  color: #ccc;
 }
 
 .pizza-price {
@@ -200,6 +298,141 @@
   padding-top: 0.5rem;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   color: #fff;
+  font-size: 1.1rem;
+}
+
+.order-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn-small {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #ccc;
+  padding: 0.4rem 0.8rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.btn-small:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.btn-cancel {
+  background: rgba(244, 67, 54, 0.2);
+  color: #f44336;
+}
+
+.btn-cancel:hover {
+  background: rgba(244, 67, 54, 0.3);
+}
+
+/* Estilos para modal de detalles de pedido */
+.large-modal {
+  max-width: 700px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.order-info-section, .order-items-section, .shipping-info-section, .order-notes-section {
+  margin-bottom: 1.5rem;
+}
+
+.order-info-section h4, .order-items-section h4, .shipping-info-section h4, .order-notes-section h4 {
+  color: #fada08;
+  margin-bottom: 0.8rem;
+  border-bottom: 1px solid #333;
+  padding-bottom: 0.5rem;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+}
+
+.info-label {
+  color: #fada08;
+  font-weight: 600;
+}
+
+.info-value {
+  color: #fff;
+}
+
+.status-pending { color: #ffc107; }
+.status-confirmed { color: #2196f3; }
+.status-preparing { color: #9c27b0; }
+.status-ready { color: #4caf50; }
+.status-delivered { color: #4caf50; }
+.status-cancelled { color: #f44336; }
+
+.order-detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem;
+  background: rgba(35, 35, 35, 0.6);
+  border-radius: 5px;
+  margin-bottom: 0.5rem;
+}
+
+.item-info h4 {
+  margin: 0 0 0.3rem 0;
+  color: #fff;
+}
+
+.ingredients {
+  font-size: 0.8rem;
+  color: #ccc;
+  margin: 0.2rem 0;
+}
+
+.item-price {
+  color: #fada08;
+  font-size: 0.9rem;
+}
+
+.item-quantity {
+  text-align: right;
+  color: #ccc;
+}
+
+.item-total {
+  display: block;
+  color: #fada08;
+  font-weight: bold;
+  margin-top: 0.3rem;
+}
+
+.address-info p {
+  margin: 0.3rem 0;
+  color: #ccc;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.order-notes {
+  background: rgba(35, 35, 35, 0.6);
+  padding: 0.8rem;
+  border-radius: 5px;
+  color: #ccc;
+  font-style: italic;
 }
 
 /* Responsive */
@@ -207,7 +440,6 @@
   .profile-header {
     flex-direction: column;
     text-align: center;
-    padding: 1rem;
   }
   
   .profile-avatar {
@@ -216,35 +448,24 @@
     font-size: 2rem;
   }
   
-  .profile-info h2 {
-    font-size: 1.5rem;
-  }
-  
-  .detail-item {
-    flex-direction: column;
-    gap: 0.2rem;
-  }
-  
   .order-header {
     flex-direction: column;
     align-items: flex-start;
   }
   
-  .profile-details {
+  .order-pizza {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+  
+  .order-detail-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .info-grid {
     grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 480px) {
-  .profile-main {
-    padding: 1rem 0.5rem;
-  }
-  
-  .detail-card {
-    padding: 1rem;
-  }
-  
-  .orders-filter {
-    justify-content: center;
   }
 }
