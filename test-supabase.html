@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba Supabase - Pizzeria El Sinú</title>
+    <!-- CDN de Supabase cargado de forma síncrona -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* Tus estilos aquí */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #2a2a2a;
+            padding: 30px;
+            border-radius: 10px;
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background: #4CAF50; }
+        .error { background: #f44336; }
+        .warning { background: #ff9800; }
+        .test-btn {
+            background: #fada08;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+        .log {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            height: 200px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Prueba de Conexión Supabase</h1>
+        
+        <div id="connection-status" class="status warning">
+            Verificando conexión...
+        </div>
+        
+        <h3>Pruebas disponibles:</h3>
+        <button class="test-btn" onclick="testConnection()">Probar Conexión</button>
+        <button class="test-btn" onclick="testAuth()">Probar Autenticación</button>
+        <button class="test-btn" onclick="testDatabase()">Probar Base de Datos</button>
+        <button class="test-btn" onclick="clearLog()">Limpiar Log</button>
+        
+        <h3>Log de eventos:</h3>
+        <div id="log" class="log"></div>
+        
+        <div style="margin-top: 20px;">
+            <h4>Configuración actual:</h4>
+            <div id="config-info"></div>
+        </div>
+    </div>
+
+    <!-- Scripts en orden CORRECTO -->
+    <script src="js/supabase.js"></script>
+    <script>
+        // Verificar inmediatamente si Supabase está disponible
+        console.log('🔍 Verificando disponibilidad de Supabase...');
+        console.log('Supabase disponible:', typeof supabase !== 'undefined');
+        console.log('createClient disponible:', typeof supabase?.createClient !== 'undefined');
+        
+        if (typeof supabase === 'undefined') {
+            console.error('❌ Supabase no está disponible. Revisa el orden de carga de scripts.');
+            document.getElementById('connection-status').innerHTML = 
+                '❌ Supabase no está disponible. Revisa la consola.';
+        }
+
+        const logElement = document.getElementById('log');
+        const statusElement = document.getElementById('connection-status');
+        const configElement = document.getElementById('config-info');
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `<span style="color: #888">[${timestamp}]</span> ${message}`;
+            logElement.appendChild(logEntry);
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(`[${type}] ${message}`);
+        }
+        
+        function clearLog() {
+            logElement.innerHTML = '';
+        }
+        
+        function updateStatus(message, type) {
+            statusElement.textContent = message;
+            statusElement.className = `status ${type}`;
+        }
+        
+        function showConfig() {
+            console.log('Mostrando configuración...');
+            console.log('Supabase:', supabase);
+            
+            if (typeof supabase !== 'undefined' && supabase.supabaseUrl) {
+                configElement.innerHTML = `
+                    <p><strong>URL:</strong> ${supabase.supabaseUrl}</p>
+                    <p><strong>Clave:</strong> ${supabase.supabaseKey ? '✅ Presente' : '❌ Faltante'}</p>
+                `;
+                log('✅ Configuración de Supabase cargada correctamente', 'success');
+            } else {
+                configElement.innerHTML = '<p>❌ Supabase no está configurado correctamente</p>';
+                log('❌ Supabase no está configurado', 'error');
+            }
+        }
+        
+        async function testConnection() {
+            log('🔍 Probando conexión básica...');
+            
+            if (typeof supabase === 'undefined') {
+                log('❌ Supabase no está definido', 'error');
+                updateStatus('Supabase no disponible', 'error');
+                return;
+            }
+            
+            try {
+                const { data, error } = await supabase.auth.getSession();
+                
+                if (error) {
+                    log(`❌ Error: ${error.message}`, 'error');
+                    updateStatus('Error de conexión', 'error');
+                } else {
+                    log('✅ Conexión básica exitosa', 'success');
+                    log(`📊 Sesión: ${data.session ? 'Activa' : 'Inactiva'}`, 'info');
+                    updateStatus('Conexión exitosa', 'success');
+                }
+            } catch (error) {
+                log(`💥 Error grave: ${error.message}`, 'error');
+                updateStatus('Error grave', 'error');
+            }
+        }
+        
+        async function testAuth() {
+            log('🔐 Probando autenticación...');
+            
+            if (typeof supabase === 'undefined') {
+                log('❌ Supabase no está disponible para auth', 'error');
+                return;
+            }
+            
+            try {
+                // Intentar registrar un usuario de prueba
+                const testEmail = `test${Date.now()}@test.com`;
+                const testPassword = 'testpassword123';
+                
+                log(`📧 Intentando registrar: ${testEmail}`);
+                
+                const { data, error } = await supabase.auth.signUp({
+                    email: testEmail,
+                    password: testPassword,
+                });
+                
+                if (error) {
+                    log(`❌ Error en auth: ${error.message}`, 'error');
+                } else {
+                    log(`✅ Registro de prueba exitoso. User ID: ${data.user?.id}`, 'success');
+                    
+                    // Intentar cerrar sesión
+                    await supabase.auth.signOut();
+                    log('✅ Logout exitoso', 'success');
+                }
+            } catch (error) {
+                log(`💥 Error en auth: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testDatabase() {
+            log('🗄️ Probando base de datos...');
+            
+            if (typeof supabase === 'undefined') {
+                log('❌ Supabase no está disponible para BD', 'error');
+                return;
+            }
+            
+            try {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .limit(1);
+                
+                if (error) {
+                    log(`❌ Error en BD: ${error.message}`, 'error');
+                } else {
+                    log(`✅ Consulta a BD exitosa. Registros: ${data.length}`, 'success');
+                }
+            } catch (error) {
+                log(`💥 Error en BD: ${error.message}`, 'error');
+            }
+        }
+        
+        // Inicializar cuando la página esté cargada
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🚀 Iniciando pruebas de Supabase...');
+            showConfig();
+            
+            // Esperar un poco y probar conexión automáticamente
+            setTimeout(() => {
+                testConnection();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
