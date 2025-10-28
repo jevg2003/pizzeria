@@ -109,7 +109,7 @@ async function loadCartItems() {
         itemElement.innerHTML = `
             <div class="item-image">
                 <img src="${getItemImage(item)}" alt="${item.name}" 
-                     onerror="this.src='img/pizza-placeholder.jpg'">
+                     onerror="this.src='${generatePizzaPlaceholderImage(item.ingredients || [])}'">
                 ${isCustomPizza ? '<div class="custom-pizza-indicator" title="Pizza Personalizada"><i class="fas fa-star"></i></div>' : ''}
             </div>
             <div class="item-details">
@@ -151,19 +151,106 @@ async function loadCartItems() {
 }
 
 function getItemImage(item) {
-    // Si es pizza personalizada y tiene imagen generada
-    if ((item.isCustom || item.id.includes('custom')) && item.image) {
-        return item.image;
+    console.log('🖼️ Obteniendo imagen para:', item.name, item);
+    
+    // Si es pizza personalizada
+    if (item.isCustom || (item.id && item.id.includes('custom'))) {
+        console.log('🔧 Es una pizza personalizada');
+        
+        // Si tiene imagen generada (data URL)
+        if (item.image && item.image.startsWith('data:image')) {
+            console.log('✅ Usando imagen generada existente');
+            return item.image;
+        }
+        
+        // Si no tiene imagen válida, generar placeholder
+        console.log('🔄 Generando nueva imagen para pizza personalizada');
+        return generatePizzaPlaceholderImage(item.ingredients || []);
     }
     
-    // Mapear IDs de pizza a imágenes
-    const imageMap = {
+    // Para pizzas predefinidas
+    console.log('🍕 Es una pizza predefinida');
+    
+    const defaultImages = {
         '1': 'img/pizzaMediterranea.jpg',
         '2': 'img/Mortadella & Basil Bliss.jpg', 
-        '3': 'img/pizzaPeperoni.jpg'
+        '3': 'img/pizzaPeperoni.jpg',
     };
     
-    return item.image || imageMap[item.id] || 'img/pizza-placeholder.jpg';
+    const imagePath = item.image || defaultImages[item.id];
+    
+    if (imagePath) {
+        console.log('📍 Usando imagen mapeada:', imagePath);
+        return imagePath;
+    }
+    
+    console.log('🔄 Usando placeholder genérico');
+    return generatePizzaPlaceholderImage([]);
+}
+
+// Función para generar imagen placeholder de pizza
+function generatePizzaPlaceholderImage(ingredients) {
+    console.log('🎨 Generando placeholder para ingredientes:', ingredients);
+    
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 200;
+    canvas.height = 200;
+    
+    // Fondo
+    ctx.fillStyle = '#2a2a2a';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Pizza base con gradiente
+    const gradient = ctx.createRadialGradient(100, 100, 0, 100, 100, 80);
+    gradient.addColorStop(0, '#f8d7a4');
+    gradient.addColorStop(1, '#e0b080');
+    
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(100, 100, 80, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Borde
+    ctx.strokeStyle = '#d4a574';
+    ctx.lineWidth = 4;
+    ctx.stroke();
+    
+    // Salsa
+    ctx.fillStyle = '#c0392b';
+    ctx.beginPath();
+    ctx.arc(100, 100, 70, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Queso
+    ctx.fillStyle = 'rgba(255, 255, 240, 0.7)';
+    ctx.beginPath();
+    ctx.arc(100, 100, 65, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Ingredientes genéricos (puntos de colores)
+    const colors = ['#e74c3c', '#27ae60', '#f5b7b1', '#a569bd', '#f9e79f'];
+    for (let i = 0; i < 12; i++) {
+        const angle = (i / 12) * Math.PI * 2;
+        const distance = 15 + Math.random() * 45;
+        const x = 100 + Math.cos(angle) * distance;
+        const y = 100 + Math.sin(angle) * distance;
+        const size = 4 + Math.random() * 4;
+        
+        ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
+        ctx.beginPath();
+        ctx.arc(x, y, size, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    
+    // Texto
+    ctx.fillStyle = '#fada08';
+    ctx.font = 'bold 12px Montserrat';
+    ctx.textAlign = 'center';
+    ctx.fillText('PIZZA PERSONALIZADA', 100, 190);
+    
+    console.log('✅ Placeholder generado exitosamente');
+    return canvas.toDataURL('image/png');
 }
 
 function getIngredientsText(ingredients) {
@@ -230,37 +317,56 @@ async function loadUserAddresses() {
         const user = checkActiveSession();
         if (!user) return;
 
-        // Simular carga de direcciones (luego se conectará a Supabase)
-        const addresses = await getUserAddressesFromStorage();
-        displayAddresses(addresses);
+        // Cargar direcciones de Supabase
+        const { data: addresses, error } = await supabase
+            .from('shipping_addresses')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('is_default', { ascending: false })
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('Error cargando direcciones:', error);
+            // Fallback a direcciones temporales
+            const tempAddresses = await getTemporaryAddresses();
+            displayAddresses(tempAddresses);
+            return;
+        }
+
+        if (addresses && addresses.length > 0) {
+            displayAddresses(addresses);
+        } else {
+            // Si no hay direcciones, mostrar opción para agregar
+            const tempAddresses = await getTemporaryAddresses();
+            displayAddresses(tempAddresses);
+        }
         
     } catch (error) {
         console.error('Error cargando direcciones:', error);
+        // Fallback a direcciones temporales
+        const tempAddresses = await getTemporaryAddresses();
+        displayAddresses(tempAddresses);
     }
 }
 
-// Función temporal para simular direcciones
-async function getUserAddressesFromStorage() {
-    // Por ahora, usar localStorage. Luego se cambiará por Supabase
-    const addresses = JSON.parse(localStorage.getItem('userAddresses')) || [];
-    
-    // Si no hay direcciones, crear una de ejemplo
-    if (addresses.length === 0) {
-        const exampleAddress = {
-            id: 'addr-1',
-            neighborhood: 'Valle del Lili',
-            property_type: 'Casa',
-            address: 'Calle 123 #45-67',
-            municipality: 'Cali',
-            city: 'Valle del Cauca',
-            phone: '300 123 4567',
-            additional_info: 'Casa blanca con portón negro',
-            is_default: true
-        };
-        return [exampleAddress];
-    }
-    
-    return addresses;
+// Función temporal para direcciones de ejemplo
+async function getTemporaryAddresses() {
+    const user = checkActiveSession();
+    if (!user) return [];
+
+    // Crear una dirección temporal basada en datos del usuario
+    return [{
+        id: 'temp-addr-1',
+        neighborhood: 'Valle del Lili',
+        property_type: 'Casa',
+        address: 'Calle 123 #45-67',
+        municipality: 'Cali',
+        city: 'Valle del Cauca',
+        phone: user.phone || '300 123 4567',
+        additional_info: 'Casa blanca con portón negro',
+        is_default: true,
+        is_temporary: true // Marcar como temporal
+    }];
 }
 
 function displayAddresses(addresses) {
@@ -278,7 +384,6 @@ function displayAddresses(addresses) {
             </div>
         `;
         
-        // Re-asignar event listener
         const addFirstAddress = document.getElementById('add-first-address');
         if (addFirstAddress) {
             addFirstAddress.addEventListener('click', showAddressModal);
@@ -287,10 +392,13 @@ function displayAddresses(addresses) {
     }
 
     addressOptions.innerHTML = addresses.map((address, index) => `
-        <div class="address-card ${index === 0 ? 'selected' : ''}" data-address-id="${address.id}">
+        <div class="address-card ${index === 0 ? 'selected' : ''}" 
+             data-address-id="${address.id}"
+             data-is-temporary="${address.is_temporary || false}">
             <div class="address-header">
                 <div class="address-title">
                     ${address.neighborhood} - ${address.property_type}
+                    ${address.is_temporary ? '<span style="color: #ffa726; margin-left: 0.5em;">(Temporal)</span>' : ''}
                 </div>
                 ${address.is_default ? '<span class="address-default">PREDETERMINADA</span>' : ''}
             </div>
@@ -300,6 +408,11 @@ function displayAddresses(addresses) {
                 <p><i class="fas fa-phone"></i> ${address.phone}</p>
                 ${address.additional_info ? `<p><i class="fas fa-info-circle"></i> ${address.additional_info}</p>` : ''}
             </div>
+            ${address.is_temporary ? `
+            <div class="address-warning">
+                <small><i class="fas fa-exclamation-triangle"></i> Esta es una dirección temporal. Agrega una dirección real para mejores resultados.</small>
+            </div>
+            ` : ''}
         </div>
     `).join('');
 
@@ -370,6 +483,12 @@ function redirectToShipping() {
     window.location.href = 'datos-envio.html';
 }
 
+// Función auxiliar para validar UUID
+function isValidUUID(uuid) {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(uuid);
+}
+
 async function handlePlaceOrder() {
     if (!window.cartManager) {
         showModal('Error', 'Error del sistema. Intenta recargar la página.', 'error');
@@ -403,36 +522,114 @@ async function handlePlaceOrder() {
         placeOrderBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
         placeOrderBtn.disabled = true;
 
-        // Simular procesamiento del pedido
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        // Calcular totales
+        const subtotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+        const shippingCost = 5000;
+        const total = subtotal + shippingCost;
 
-        // Aquí irá la lógica para guardar en Supabase
+        const user = checkActiveSession();
+        if (!user) {
+            throw new Error('Usuario no autenticado');
+        }
+
+        // Obtener la dirección real de Supabase
+        const addressId = selectedAddress.dataset.addressId;
+        
+        // Si la dirección no es un UUID válido, usar null y guardar la dirección en notes
+        let shippingAddressId = null;
+        let addressNotes = '';
+        
+        if (isValidUUID(addressId)) {
+            shippingAddressId = addressId;
+        } else {
+            // Si es una dirección temporal, guardar la información en notes
+            const addressText = selectedAddress.querySelector('.address-details').textContent;
+            addressNotes = `Dirección: ${addressText}. ${orderNotes || ''}`;
+        }
+
+        // 1. Crear el pedido en Supabase
+        const orderNumber = 'ORD-' + Date.now();
+        
         const orderData = {
-            items: cartItems,
-            address: selectedAddress.dataset.addressId,
-            paymentMethod: paymentMethod.value,
-            notes: orderNotes,
-            total: calculateTotal(),
+            user_id: user.id,
+            order_number: orderNumber,
+            subtotal: subtotal,
+            shipping_cost: shippingCost,
+            total: total,
+            payment_method: paymentMethod.value,
             status: 'pending',
-            createdAt: new Date().toISOString()
+            payment_status: 'pending',
+            notes: addressNotes || orderNotes
         };
 
-        console.log('📦 Datos del pedido:', orderData);
+        // Solo agregar shipping_address_id si es un UUID válido
+        if (shippingAddressId) {
+            orderData.shipping_address_id = shippingAddressId;
+        }
 
-        // Limpiar carrito usando el cartManager
+        const { data: order, error: orderError } = await supabase
+            .from('orders')
+            .insert([orderData])
+            .select()
+            .single();
+
+        if (orderError) {
+            console.error('Error creando pedido:', orderError);
+            throw new Error('Error al crear el pedido: ' + orderError.message);
+        }
+
+        // 2. Crear los items del pedido
+        const orderItems = cartItems.map(item => ({
+            order_id: order.id,
+            product_id: item.id,
+            product_name: item.name,
+            product_description: item.description || getIngredientsText(item.ingredients),
+            product_price: item.price,
+            quantity: item.quantity,
+            is_custom: item.isCustom || false,
+            custom_ingredients: item.ingredients || null,
+            image_url: item.image || null
+        }));
+
+        const { error: itemsError } = await supabase
+            .from('order_items')
+            .insert(orderItems);
+
+        if (itemsError) {
+            console.error('Error creando items:', itemsError);
+            throw new Error('Error al guardar los items del pedido');
+        }
+
+        console.log('✅ Pedido creado exitosamente:', order.id);
+
+        // 3. Limpiar carrito
         window.cartManager.clearCart();
 
         showModal(
             '¡Pedido Confirmado!', 
-            'Tu pedido ha sido recibido y está siendo preparado. Te contactaremos pronto para confirmar la entrega.',
+            `Tu pedido #${orderNumber} ha sido recibido y está siendo preparado. Total: $${total.toLocaleString()}`,
             'success',
             true,
             'index.html'
         );
 
     } catch (error) {
-        console.error('Error procesando pedido:', error);
-        showModal('Error', 'Hubo un problema al procesar tu pedido. Intenta nuevamente.', 'error');
+        console.error('💥 Error procesando pedido:', error);
+        
+        let errorMessage = 'Hubo un problema al procesar tu pedido. Intenta nuevamente.';
+        
+        if (error.message.includes('network') || error.message.includes('Internet')) {
+            errorMessage = 'Error de conexión. Verifica tu internet e intenta nuevamente.';
+        } else if (error.message.includes('autenticado')) {
+            errorMessage = 'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.';
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 3000);
+        } else if (error.message.includes('uuid')) {
+            errorMessage = 'Error en la dirección de envío. Por favor, actualiza tus datos de envío.';
+        }
+        
+        showModal('Error', errorMessage, 'error');
         
         // Restaurar botón
         const placeOrderBtn = document.getElementById('place-order-btn');

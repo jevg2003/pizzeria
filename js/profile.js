@@ -38,6 +38,27 @@ async function loadUserData() {
         window.location.href = 'login.html';
     }
 }
+async function loadOrderHistory() {
+    try {
+        const user = checkActiveSession();
+        const { data: orders, error } = await supabase
+            .from('orders')
+            .select(`
+                *,
+                order_items (*),
+                shipping_addresses (*)
+            `)
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        
+        // Actualizar la UI con los pedidos
+        displayOrderHistory(orders);
+    } catch (error) {
+        console.error('Error cargando historial:', error);
+    }
+}
 
 // Función para editar información personal
 async function editPersonalInfo() {

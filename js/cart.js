@@ -102,142 +102,326 @@ class CartManager {
             return false;
         }
 
-        // Generar imagen de la pizza personalizada
-        const pizzaImage = await this.generatePizzaImage(pizzaData.ingredients);
+        try {
+            console.log('🍕 Creando pizza personalizada:', pizzaData);
+            
+            // Generar imagen de la pizza personalizada
+            const pizzaImage = await this.generatePizzaImage(pizzaData.ingredients);
+            console.log('🖼️ Imagen generada para pizza personalizada');
 
-        const customPizza = {
-            id: 'custom-' + Date.now(),
-            name: 'Pizza Personalizada',
-            description: this.getPizzaDescription(pizzaData.ingredients),
-            price: pizzaData.totalPrice,
-            ingredients: pizzaData.ingredients,
-            quantity: 1,
-            isCustom: true,
-            image: pizzaImage // Agregar la imagen generada
-        };
+            const customPizza = {
+                id: 'custom-' + Date.now(),
+                name: 'Pizza Personalizada',
+                description: this.getPizzaDescription(pizzaData.ingredients),
+                price: pizzaData.totalPrice,
+                ingredients: pizzaData.ingredients,
+                quantity: 1,
+                isCustom: true,
+                image: pizzaImage
+            };
 
-        return await this.addItem(customPizza);
+            console.log('✅ Pizza personalizada creada:', customPizza);
+            return await this.addItem(customPizza);
+            
+        } catch (error) {
+            console.error('❌ Error creando pizza personalizada:', error);
+            this.showMessage('Error al crear la pizza personalizada', 'error');
+            return false;
+        }
     }
 
     // Función para generar imagen de pizza personalizada
     async generatePizzaImage(ingredients) {
         try {
-            // Crear un canvas básico para la imagen de pizza personalizada
+            console.log('🎨 Generando imagen para pizza personalizada con ingredientes:', ingredients);
+            
+            // Crear un canvas para la imagen de pizza personalizada
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             canvas.width = 300;
             canvas.height = 300;
 
-            // Fondo
+            // Fondo oscuro elegante
             ctx.fillStyle = '#1a1a1a';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Base de pizza
+            // Base de pizza (masa) - centro
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
-            const radius = 100;
+            const radius = 120;
 
-            // Masa
-            ctx.fillStyle = '#f0c090';
+            // Masa de pizza (dorada con gradiente)
+            const doughGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
+            doughGradient.addColorStop(0, '#f8d7a4');
+            doughGradient.addColorStop(1, '#e0b080');
+            
+            ctx.fillStyle = doughGradient;
             ctx.beginPath();
             ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
             ctx.fill();
 
-            // Salsa (si hay ingredientes base)
-            const hasSauce = ingredients.some(ing => ing.id && ing.id.includes('salsa'));
-            if (hasSauce) {
-                ctx.fillStyle = '#c0392b';
-                ctx.beginPath();
-                ctx.arc(centerX, centerY, radius - 15, 0, Math.PI * 2);
-                ctx.fill();
-            }
-
-            // Queso (si hay queso)
-            const hasCheese = ingredients.some(ing => ing.id && ing.id.includes('queso'));
-            if (hasCheese) {
-                ctx.fillStyle = '#f8f9fa';
-                ctx.beginPath();
-                ctx.arc(centerX, centerY, radius - 20, 0, Math.PI * 2);
-                ctx.fill();
-            }
-
-            // Toppings
-            ingredients.forEach(ingredient => {
-                if (ingredient.id && !ingredient.id.includes('salsa') && !ingredient.id.includes('queso')) {
-                    this.drawTopping(ctx, centerX, centerY, radius - 25, ingredient);
-                }
-            });
-
-            // Borde
+            // Borde de la masa crujiente
             ctx.strokeStyle = '#d4a574';
             ctx.lineWidth = 8;
             ctx.beginPath();
             ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
             ctx.stroke();
 
+            // Salsa de tomate (si hay ingredientes base)
+            const hasSauce = ingredients.some(ing => 
+                ing.name && ing.name.toLowerCase().includes('salsa')
+            );
+            if (hasSauce || ingredients.length > 0) {
+                const sauceGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius - 15);
+                sauceGradient.addColorStop(0, '#e74c3c');
+                sauceGradient.addColorStop(1, '#c0392b');
+                
+                ctx.fillStyle = sauceGradient;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius - 15, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Queso (si hay queso o siempre para que se vea bien)
+            const hasCheese = ingredients.some(ing => 
+                ing.name && ing.name.toLowerCase().includes('queso')
+            );
+            if (hasCheese || ingredients.length > 0) {
+                ctx.fillStyle = 'rgba(255, 255, 240, 0.7)';
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius - 20, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Dibujar toppings basados en los ingredientes reales
+            this.drawPizzaToppings(ctx, centerX, centerY, radius - 25, ingredients);
+
+            // Texto "Personalizada"
+            ctx.fillStyle = '#fada08';
+            ctx.font = 'bold 18px "Montserrat", Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Sombra para el texto
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+            ctx.shadowBlur = 4;
+            ctx.shadowOffsetX = 2;
+            ctx.shadowOffsetY = 2;
+            
+            ctx.fillText('PIZZA PERSONALIZADA', centerX, centerY + radius + 30);
+
+            // Resetear sombra
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+
+            console.log('✅ Imagen de pizza generada exitosamente');
             return canvas.toDataURL('image/png');
+            
         } catch (error) {
-            console.error('Error generando imagen de pizza:', error);
+            console.error('❌ Error generando imagen de pizza:', error);
             return this.generateFallbackImage();
         }
     }
 
-    // Función para dibujar toppings
-    drawTopping(ctx, centerX, centerY, radius, ingredient) {
-        const colors = {
-            'pepperoni': '#e74c3c',
-            'jamon': '#f5b7b1', 
-            'pollo': '#f9e79f',
-            'champinones': '#a569bd',
-            'pimiento': '#27ae60',
-            'cebolla': '#d7dbdd',
-            'aceitunas': '#34495e'
+    // Función mejorada para dibujar toppings realistas
+    drawPizzaToppings(ctx, centerX, centerY, radius, ingredients) {
+        const toppingConfigs = {
+            'pepperoni': { 
+                color: '#e74c3c', 
+                highlight: '#ff6b6b',
+                size: 12, 
+                count: 10,
+                shape: 'circle'
+            },
+            'jamon': { 
+                color: '#f5b7b1', 
+                highlight: '#fff',
+                size: 14, 
+                count: 8,
+                shape: 'rectangle'
+            },
+            'pollo': { 
+                color: '#f9e79f', 
+                highlight: '#fffde7',
+                size: 11, 
+                count: 9,
+                shape: 'circle'
+            },
+            'champinones': { 
+                color: '#a569bd', 
+                highlight: '#d7bde2',
+                size: 9, 
+                count: 12,
+                shape: 'circle'
+            },
+            'pimiento': { 
+                color: '#27ae60', 
+                highlight: '#2ecc71',
+                size: 8, 
+                count: 15,
+                shape: 'rectangle'
+            },
+            'cebolla': { 
+                color: '#d7dbdd', 
+                highlight: '#fff',
+                size: 7, 
+                count: 18,
+                shape: 'circle'
+            },
+            'aceitunas': { 
+                color: '#34495e', 
+                highlight: '#5d6d7e',
+                size: 6, 
+                count: 20,
+                shape: 'circle'
+            },
+            'salsa': { 
+                color: '#c0392b', 
+                highlight: '#e74c3c',
+                size: 0, 
+                count: 0,
+                shape: 'base'
+            },
+            'queso': { 
+                color: '#fffde7', 
+                highlight: '#fff',
+                size: 0, 
+                count: 0,
+                shape: 'base'
+            }
         };
 
-        const color = colors[ingredient.id] || '#cccccc';
-        ctx.fillStyle = color;
-
-        // Dibujar múltiples piezas del topping
-        const numPieces = 8 + Math.floor(Math.random() * 4);
-        for (let i = 0; i < numPieces; i++) {
-            const angle = (i / numPieces) * Math.PI * 2 + (Math.random() * 0.3);
-            const distance = 20 + Math.random() * (radius - 30);
-            const x = centerX + Math.cos(angle) * distance;
-            const y = centerY + Math.sin(angle) * distance;
+        // Dibujar cada tipo de ingrediente
+        ingredients.forEach(ingredient => {
+            const ingName = ingredient.name ? ingredient.name.toLowerCase().replace(/\s+/g, '') : '';
+            const config = toppingConfigs[ingName];
             
-            const size = 5 + Math.random() * 3;
-            ctx.beginPath();
-            ctx.arc(x, y, size, 0, Math.PI * 2);
-            ctx.fill();
+            if (config && config.count > 0) {
+                console.log(`🍕 Dibujando topping: ${ingName}`);
+                
+                // Dibujar múltiples piezas del topping
+                for (let i = 0; i < config.count; i++) {
+                    const angle = (i / config.count) * Math.PI * 2 + (Math.random() * 0.3);
+                    const distance = 25 + Math.random() * (radius - 35);
+                    const x = centerX + Math.cos(angle) * distance;
+                    const y = centerY + Math.sin(angle) * distance;
+                    
+                    // Variar ligeramente el tamaño
+                    const size = config.size * (0.8 + Math.random() * 0.4);
+                    
+                    if (config.shape === 'circle') {
+                        // Topping circular (pepperoni, champiñones, etc.)
+                        const toppingGradient = ctx.createRadialGradient(
+                            x - size/3, y - size/3, 0, 
+                            x, y, size
+                        );
+                        toppingGradient.addColorStop(0, config.highlight);
+                        toppingGradient.addColorStop(1, config.color);
+                        
+                        ctx.fillStyle = toppingGradient;
+                        ctx.beginPath();
+                        ctx.arc(x, y, size, 0, Math.PI * 2);
+                        ctx.fill();
+                        
+                        // Detalles para pepperoni
+                        if (ingName === 'pepperoni') {
+                            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+                            ctx.beginPath();
+                            ctx.arc(x - size/3, y - size/3, size/4, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                        
+                    } else if (config.shape === 'rectangle') {
+                        // Topping rectangular (jamón, pimiento, etc.)
+                        const width = size * 1.5;
+                        const height = size * 0.8;
+                        const rotation = Math.random() * Math.PI;
+                        
+                        ctx.save();
+                        ctx.translate(x, y);
+                        ctx.rotate(rotation);
+                        
+                        ctx.fillStyle = config.color;
+                        ctx.fillRect(-width/2, -height/2, width, height);
+                        
+                        // Highlight
+                        ctx.fillStyle = config.highlight;
+                        ctx.fillRect(-width/2, -height/2, width, height/3);
+                        
+                        ctx.restore();
+                    }
+                }
+            }
+        });
+
+        // Si no hay ingredientes específicos, agregar algunos genéricos
+        if (ingredients.length === 0) {
+            this.drawGenericToppings(ctx, centerX, centerY, radius);
         }
     }
 
-    // Imagen de fallback
-    generateFallbackImage() {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = 300;
-        canvas.height = 300;
-        
-        ctx.fillStyle = '#1a1a1a';
-        ctx.fillRect(0, 0, 300, 300);
-        
-        ctx.fillStyle = '#f0c090';
-        ctx.beginPath();
-        ctx.arc(150, 150, 100, 0, Math.PI * 2);
-        ctx.fill();
-        
-        ctx.fillStyle = '#f8f9fa';
-        ctx.beginPath();
-        ctx.arc(150, 150, 80, 0, Math.PI * 2);
-        ctx.fill();
+    // Toppings genéricos para cuando no hay ingredientes específicos
+    drawGenericToppings(ctx, centerX, centerY, radius) {
+        const genericToppings = [
+            { x: 120, y: 120, color: '#e74c3c', size: 12 }, // pepperoni
+            { x: 180, y: 130, color: '#f5b7b1', size: 14 }, // jamón
+            { x: 140, y: 180, color: '#f9e79f', size: 11 }, // pollo
+            { x: 160, y: 110, color: '#a569bd', size: 9 },  // champiñones
+            { x: 100, y: 160, color: '#27ae60', size: 8 },  // pimiento
+            { x: 130, y: 140, color: '#d7dbdd', size: 7 },  // cebolla
+            { x: 170, y: 160, color: '#34495e', size: 6 }   // aceitunas
+        ];
 
-        ctx.fillStyle = '#fada08';
-        ctx.font = 'bold 16px Montserrat';
-        ctx.textAlign = 'center';
-        ctx.fillText('PIZZA PERSONALIZADA', 150, 150);
-        
-        return canvas.toDataURL('image/png');
+        genericToppings.forEach(topping => {
+            const gradient = ctx.createRadialGradient(
+                topping.x - topping.size/3, topping.y - topping.size/3, 0,
+                topping.x, topping.y, topping.size
+            );
+            gradient.addColorStop(0, '#fff');
+            gradient.addColorStop(1, topping.color);
+            
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(topping.x, topping.y, topping.size, 0, Math.PI * 2);
+            ctx.fill();
+        });
+    }
+
+    // Imagen de fallback mejorada
+    generateFallbackImage() {
+        console.log('🔄 Usando imagen de fallback para pizza personalizada');
+        return 'data:image/svg+xml;base64,' + btoa(`
+            <svg width="300" height="300" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#1a1a1a"/>
+                        <stop offset="100%" stop-color="#2a2a2a"/>
+                    </linearGradient>
+                    <radialGradient id="doughGradient" cx="30%" cy="30%">
+                        <stop offset="0%" stop-color="#f8d7a4"/>
+                        <stop offset="100%" stop-color="#e0b080"/>
+                    </radialGradient>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#bgGradient)"/>
+                <circle cx="150" cy="150" r="120" fill="url(#doughGradient)" stroke="#d4a574" stroke-width="8"/>
+                <circle cx="150" cy="150" r="105" fill="#c0392b" opacity="0.9"/>
+                <circle cx="150" cy="150" r="95" fill="#fffde7" opacity="0.8"/>
+                <!-- Toppings variados -->
+                <circle cx="120" cy="120" r="12" fill="#e74c3c"/>
+                <circle cx="180" cy="130" r="10" fill="#f5b7b1"/>
+                <circle cx="140" cy="180" r="11" fill="#f9e79f"/>
+                <circle cx="160" cy="110" r="8" fill="#a569bd"/>
+                <circle cx="100" cy="160" r="9" fill="#27ae60"/>
+                <circle cx="130" cy="140" r="7" fill="#d7dbdd"/>
+                <circle cx="170" cy="160" r="6" fill="#34495e"/>
+                <!-- Texto destacado -->
+                <text x="150" y="280" text-anchor="middle" font-family="Montserrat" font-size="16" font-weight="bold" fill="#fada08">
+                    PIZZA PERSONALIZADA
+                </text>
+            </svg>
+        `);
     }
 
     getPizzaDescription(ingredients) {
