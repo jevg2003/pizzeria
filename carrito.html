@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Carrito de Compras - Pizzeria El Sinú</title>
+  <link rel="icon" href="img/gato_piza-removebg-preview.png" type="image/png">
+  <link rel="stylesheet" href="css/estilos.css" />
+  <link rel="stylesheet" href="css/carrito.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <header class="main-header">
+    <div class="container">
+      <nav class="main-nav">
+        <a href="index.html" class="logo">
+          <img src="img/gato_piza-removebg-preview.png" alt="Logo Pizzería" />
+        </a>
+        <ul>
+          <li><a href="index.html">INICIO</a></li>
+          <li><a href="about.html">NOSOTROS</a></li>
+          <li><a href="crear-pizza.html">CREAR PIZZA</a></li>
+          <li id="auth-link">
+            <!-- Se actualizará con JavaScript -->
+          </li>
+          <li id="cart-nav-item" style="display: none;">
+            <a href="#" class="cart-icon" id="cart-button">
+              <i class="fas fa-shopping-cart"></i>
+              <span class="cart-count">0</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="cart-main">
+    <div class="cart-container">
+      <div class="cart-header">
+        <h1><i class="fas fa-shopping-cart"></i> Tu Carrito de Compras</h1>
+        <p>Revisa tu pedido y completa la información para finalizar</p>
+      </div>
+
+      <!-- Resumen del pedido -->
+      <section class="order-summary">
+        <h2><i class="fas fa-receipt"></i> Resumen del Pedido</h2>
+        
+        <div class="order-items" id="order-items">
+          <!-- Los items del carrito se cargarán aquí dinámicamente -->
+          <div class="empty-cart-message">
+            <i class="fas fa-shopping-cart"></i>
+            <p>Tu carrito está vacío</p>
+            <a href="index.html" class="btn-primary">Ir a Comprar</a>
+          </div>
+        </div>
+
+        <div class="order-totals">
+          <div class="total-row">
+            <span>Subtotal:</span>
+            <span id="subtotal-price">$0</span>
+          </div>
+          <div class="total-row">
+            <span>Costo de envío:</span>
+            <span id="shipping-cost">$5.000</span>
+          </div>
+          <div class="total-row total-final">
+            <span>Total:</span>
+            <span id="total-price">$0</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Selección de dirección -->
+      <section class="address-section">
+        <div class="section-header">
+          <h2><i class="fas fa-map-marker-alt"></i> Dirección de Envío</h2>
+          <button id="add-new-address" class="btn-small">
+            <i class="fas fa-plus"></i> Agregar Nueva Dirección
+          </button>
+        </div>
+
+        <div class="address-options" id="address-options">
+          <!-- Las direcciones se cargarán aquí dinámicamente -->
+          <div class="no-address-message">
+            <i class="fas fa-map-marker-alt"></i>
+            <p>No tienes direcciones guardadas</p>
+            <button id="add-first-address" class="btn-primary">
+              <i class="fas fa-plus"></i> Agregar Primera Dirección
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Método de pago -->
+      <section class="payment-section">
+        <h2><i class="fas fa-credit-card"></i> Método de Pago</h2>
+        
+        <div class="payment-options">
+          <div class="payment-option selected">
+            <input type="radio" id="cash-payment" name="payment-method" value="cash" checked>
+            <label for="cash-payment">
+              <i class="fas fa-money-bill-wave"></i>
+              <span>Pago en Efectivo</span>
+              <small>Paga cuando recibas tu pedido</small>
+            </label>
+          </div>
+          
+          <div class="payment-option">
+            <input type="radio" id="card-payment" name="payment-method" value="card">
+            <label for="card-payment">
+              <i class="fas fa-credit-card"></i>
+              <span>Tarjeta de Crédito/Débito</span>
+              <small>Pago seguro en línea</small>
+            </label>
+          </div>
+        </div>
+
+        <!-- Información de tarjeta (se muestra solo si se selecciona tarjeta) -->
+        <div class="card-info" id="card-info" style="display: none;">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="card-number">Número de Tarjeta</label>
+              <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19">
+            </div>
+            
+            <div class="form-group">
+              <label for="card-name">Nombre en la Tarjeta</label>
+              <input type="text" id="card-name" placeholder="JUAN PEREZ">
+            </div>
+            
+            <div class="form-group">
+              <label for="card-expiry">Fecha de Expiración</label>
+              <input type="text" id="card-expiry" placeholder="MM/AA" maxlength="5">
+            </div>
+            
+            <div class="form-group">
+              <label for="card-cvv">CVV</label>
+              <input type="text" id="card-cvv" placeholder="123" maxlength="3">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Notas especiales -->
+      <section class="notes-section">
+        <h2><i class="fas fa-sticky-note"></i> Notas Especiales</h2>
+        <div class="form-group">
+          <textarea id="order-notes" placeholder="¿Alguna instrucción especial para tu pedido? Ej: Sin cebolla, entrega en portería, etc." rows="3"></textarea>
+        </div>
+      </section>
+
+      <!-- Acciones finales -->
+      <section class="checkout-actions">
+        <button id="place-order-btn" class="btn-primary btn-large" disabled>
+          <i class="fas fa-check-circle"></i> Confirmar Pedido
+        </button>
+        <a href="index.html" class="btn-secondary">
+          <i class="fas fa-arrow-left"></i> Seguir Comprando
+        </a>
+      </section>
+    </div>
+  </main>
+
+  <!-- Modal para agregar nueva dirección -->
+  <div class="modal-overlay" id="address-modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="fas fa-plus"></i> Agregar Nueva Dirección</h3>
+        <button class="close-modal" id="close-address-modal">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Serás redirigido a la página de datos de envío para agregar una nueva dirección.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="cancel-address">Cancelar</button>
+        <button class="btn-primary" id="confirm-address">Continuar</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>WE LOVE PIZZA • WE LOVE FAST FOOD • WE LOVE PIZZA</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/supabase.js"></script>
+  <script src="js/auth-utils.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/carrito.js"></script>
+  <script src="js/pizza-generator.js"></script>
+</body>
+</html>
