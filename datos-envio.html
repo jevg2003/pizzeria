@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Datos de Envío - Pizzeria El Sinú</title>
+  <link rel="icon" href="img/gato_piza-removebg-preview.png" type="image/png">
+  <link rel="stylesheet" href="css/estilos.css" />
+  <link rel="stylesheet" href="css/datos-envio.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <header class="main-header">
+    <div class="container">
+      <nav class="main-nav">
+        <a href="index.html" class="logo">
+          <img src="img/gato_piza-removebg-preview.png" alt="Logo Pizzería" />
+        </a>
+        <ul>
+          <li><a href="index.html">INICIO</a></li>
+          <li><a href="about.html">NOSOTROS</a></li>
+          <li><a href="crear-pizza.html">CREAR PIZZA</a></li>
+          <li id="auth-link">
+            <!-- Se actualizará con JavaScript -->
+          </li>
+          <li id="cart-nav-item" style="display: none;">
+            <a href="#" class="cart-icon" id="cart-button">
+              <i class="fas fa-shopping-cart"></i>
+              <span class="cart-count">0</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shipping-main">
+    <div class="shipping-container">
+      <div class="shipping-header">
+        <h1><i class="fas fa-truck"></i> Datos de Envío</h1>
+        <p>Completa tu información para recibir tu pedido</p>
+      </div>
+
+      <form id="shipping-form" class="shipping-form">
+        <div class="form-grid">
+          <!-- Columna 1 -->
+          <div class="form-column">
+            <div class="form-group">
+              <label for="city"><i class="fas fa-city"></i> Ciudad *</label>
+              <input type="text" id="city" name="city" required placeholder="Ej: Cali">
+            </div>
+
+            <div class="form-group">
+              <label for="municipality"><i class="fas fa-map-marker-alt"></i> Municipio *</label>
+              <input type="text" id="municipality" name="municipality" required placeholder="Ej: valle del cauca">
+            </div>
+
+            <div class="form-group">
+              <label for="neighborhood"><i class="fas fa-home"></i> Barrio *</label>
+              <input type="text" id="neighborhood" name="neighborhood" required placeholder="Ej: valle del lili">
+            </div>
+          </div>
+
+          <!-- Columna 2 -->
+          <div class="form-column">
+            <div class="form-group">
+              <label for="phone"><i class="fas fa-phone"></i> Número de Celular *</label>
+              <input type="tel" id="phone" name="phone" required placeholder="Ej: 3001234567">
+            </div>
+
+            <div class="form-group">
+                <label for="property_type"><i class="fas fa-building"></i> Tipo de Propiedad *</label>
+                
+                <select id="property_type" name="property_type" required style="display: none;">
+                    <option value="">Selecciona el tipo...</option>
+                    <option value="casa">Casa</option>
+                    <option value="apartamento">Apartamento</option>
+                    <option value="oficina">Oficina</option>
+                    <option value="local">Local Comercial</option>
+                    <option value="otro">Otro</option>
+                </select>
+                
+                <!-- Tu custom select visual -->
+                <div class="custom-select" id="custom_property_type">
+                    <div class="custom-select__trigger">
+                    <span>Selecciona el tipo...</span>
+                    <div class="arrow">▼</div>
+                    </div>
+                    <div class="custom-options">
+                    <div class="custom-option" data-value="casa">Casa</div>
+                    <div class="custom-option" data-value="apartamento">Apartamento</div>
+                    <div class="custom-option" data-value="oficina">Oficina</div>
+                    <div class="custom-option" data-value="local">Local Comercial</div>
+                    <div class="custom-option" data-value="otro">Otro</div>
+                    </div>
+                </div>
+                </div>
+
+            <div class="form-group">
+              <label for="address"><i class="fas fa-map-pin"></i> Dirección Completa *</label>
+              <input type="address" id="address" name="address" required placeholder="Ej: calle 123 #45-67">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="additional_info"><i class="fas fa-info-circle"></i> Información Adicional</label>
+          <textarea id="additional_info" name="additional_info" placeholder="Ej: Casa blanca con portón negro, frente al parque, timbre azul..." rows="3"></textarea>
+          <small>Información extra que nos ayude a encontrar tu domicilio más fácilmente</small>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" onclick="window.history.back()">
+            <i class="fas fa-arrow-left"></i> Volver
+          </button>
+          <button type="submit" class="btn-primary">
+            <i class="fas fa-save"></i> Guardar y Continuar
+          </button>
+        </div>
+      </form>
+
+      <!-- Direcciones guardadas -->
+      <div class="saved-addresses" id="saved-addresses" style="display: none;">
+        <h3><i class="fas fa-bookmark"></i> Direcciones Guardadas</h3>
+        <div id="addresses-list" class="addresses-list">
+          <!-- Las direcciones se cargarán aquí dinámicamente -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Carrito de compras -->
+  <div class="cart-overlay" id="cart-overlay">
+    <div class="cart-container">
+      <div class="cart-header">
+        <h2>Tu Carrito de Compras</h2>
+        <button class="close-cart" id="close-cart">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="cart-items" id="cart-items">
+        <div class="empty-cart-message">
+          <i class="fas fa-shopping-cart"></i>
+          <p>Tu carrito está vacío</p>
+        </div>
+      </div>
+      <div class="cart-total">
+        <h3>Total: <span id="cart-total-price">$0</span></h3>
+        <button class="checkout-btn" id="checkout-btn">Realizar Pedido</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>WE LOVE PIZZA • WE LOVE FAST FOOD • WE LOVE PIZZA</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/supabase.js"></script>
+  <script src="js/select.js"></script>
+  <script src="js/auth-utils.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/datos-envio.js"></script>
+</body>
+</html>
