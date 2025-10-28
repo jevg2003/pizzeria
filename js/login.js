@@ -1,77 +1,113 @@
-// login.js - Funcionalidad para la página de login con modal personalizado
-
-// Esperar a que el DOM esté completamente cargado
+// js/login.js - Versión con tabla personalizada
 document.addEventListener('DOMContentLoaded', function() {
-    // Configurar el evento de submit del formulario
     const loginForm = document.getElementById('loginForm');
     
     if (loginForm) {
-        loginForm.addEventListener('submit', function(e) {
+        loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // Obtener valores del formulario
-            const usernameInput = this.querySelector('input[name="usuario"]');
-            const passwordInput = this.querySelector('input[name="clave"]');
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Iniciando sesión...';
+            submitBtn.disabled = true;
             
-            const username = usernameInput.value.trim();
-            const password = passwordInput.value;
-            
-            // Validaciones básicas
-            if (!username) {
-                showModal('Error', 'Por favor ingresa tu usuario o correo electrónico', 'error');
-                usernameInput.focus();
-                return;
-            }
-            
-            if (!password) {
-                showModal('Error', 'Por favor ingresa tu contraseña', 'error');
-                passwordInput.focus();
-                return;
-            }
-            
-            // Simular usuario (en un caso real, verificarías contra una base de datos)
-            const userData = {
-                name: username || 'Usuario',
-                email: username + '@ejemplo.com',
-                loginDate: new Date().toISOString()
+            const formData = new FormData(this);
+            const credentials = {
+                email: formData.get('usuario').toLowerCase().trim(),
+                password: formData.get('clave')
             };
             
-            // Guardar en localStorage
-            localStorage.setItem('pizzeriaUser', JSON.stringify(userData));
+            // Validaciones básicas
+            if (!credentials.email) {
+                showModal('Error', 'Por favor ingresa tu correo electrónico', 'error');
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+                return;
+            }
             
-            // Verificar si hay una pizza en borradores
-            const hasPizzaDraft = localStorage.getItem('pizzeriaDraftPizza');
+            if (!credentials.password) {
+                showModal('Error', 'Por favor ingresa tu contraseña', 'error');
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+                return;
+            }
             
-            if (hasPizzaDraft) {
-                // Redirigir a crear-pizza para recuperar la pizza
-                showModal('¡Éxito!', '¡Inicio de sesión exitoso! Tu pizza personalizada ha sido recuperada.', 'success', true, 'crear-pizza.html');
-            } else {
-                // Redirigir a la página principal
-                showModal('¡Éxito!', '¡Inicio de sesión exitoso! Bienvenido a Pizzeria El Sinú', 'success', true, 'index.html');
+            try {
+                console.log('🔐 Iniciando sesión con tabla personalizada...');
+                
+                // Buscar usuario en la tabla personalizada
+                const { data: user, error: userError } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('email', credentials.email)
+                    .eq('is_active', true)
+                    .single();
+                
+                if (userError) {
+                    if (userError.code === 'PGRST116') { // No encontrado
+                        throw new Error('Usuario no encontrado');
+                    }
+                    throw userError;
+                }
+                
+                if (!user) {
+                    throw new Error('Usuario no encontrado');
+                }
+                
+                // Verificar contraseña
+                const isPasswordValid = await verifyPassword(credentials.password, user.password_hash);
+                
+                if (!isPasswordValid) {
+                    throw new Error('Contraseña incorrecta');
+                }
+                
+                console.log('✅ Login exitoso:', user.id);
+                
+                // Actualizar último login
+                await supabase
+                    .from('users')
+                    .update({ last_login: new Date().toISOString() })
+                    .eq('id', user.id);
+                
+                // Crear sesión
+                const userSession = {
+                    id: user.id,
+                    email: user.email,
+                    name: user.full_name,
+                    full_name: user.full_name,
+                    phone: user.phone,
+                    loginDate: new Date().toISOString()
+                };
+                
+                saveUserSession(userSession);
+                
+                // Verificar si hay una pizza en borradores
+                const hasPizzaDraft = localStorage.getItem('pizzeriaDraftPizza');
+                
+                if (hasPizzaDraft) {
+                    showModal('¡Éxito!', '¡Inicio de sesión exitoso! Tu pizza personalizada ha sido recuperada.', 'success', true, 'crear-pizza.html');
+                } else {
+                    showModal('¡Éxito!', '¡Inicio de sesión exitoso! Bienvenido a Pizzeria El Sinú', 'success', true, 'index.html');
+                }
+                
+            } catch (error) {
+                console.error('💥 Error en login:', error);
+                
+                let errorMessage = 'Error al iniciar sesión';
+                
+                if (error.message.includes('no encontrado') || error.message.includes('contraseña incorrecta')) {
+                    errorMessage = 'Email o contraseña incorrectos';
+                } else {
+                    errorMessage = error.message || 'Error al iniciar sesión';
+                }
+                
+                showModal('Error', errorMessage, 'error');
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
             }
         });
     }
-    
-    // Configurar botones de toggle si existen
-    const btnLogin = document.getElementById('btnLogin');
-    const btnRegistro = document.getElementById('btnRegistro');
-    
-    if (btnLogin && btnRegistro) {
-        btnLogin.addEventListener('click', function() {
-            // Remover clase active de todos los botones
-            btnLogin.classList.add('active');
-            btnRegistro.classList.remove('active');
-        });
-        
-        btnRegistro.addEventListener('click', function() {
-            // Remover clase active de todos los botones
-            btnRegistro.classList.add('active');
-            btnLogin.classList.remove('active');
-        });
-    }
-    
-    // Configurar el modal si existe
-    setupModal();
 });
 
 // Función para mostrar modal personalizado (modificada para aceptar URL personalizada)

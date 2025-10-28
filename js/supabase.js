@@ -12,23 +12,21 @@ if (typeof supabase === 'undefined') {
 const SUPABASE_URL = 'https://ydtbzwulmqrfjkbdunyg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkdGJ6d3VsbXFyZmprYmR1bnlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEyMjk4NDUsImV4cCI6MjA3NjgwNTg0NX0.NDN527W9x-2qOtee1Dox70B-sQ4pFHhYHKXTBnevh_s';
 
-// Inicializar Supabase
-let supabaseClient;
 
-try {
-    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    console.log('✅ Cliente Supabase inicializado correctamente');
-    console.log('📊 URL:', SUPABASE_URL);
-    console.log('🔑 Clave presente:', !!SUPABASE_ANON_KEY);
-} catch (error) {
-    console.error('❌ Error inicializando Supabase:', error);
-    supabaseClient = null;
-}
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true
+    },
+    global: {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_ANON_KEY
+        }
+    }
+});
 
-// Hacer disponible globalmente
+console.log('✅ Supabase configurado correctamente');
 window.supabase = supabaseClient;
-
-// Exportar para usar en otros archivos
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = supabaseClient;
-}

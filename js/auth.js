@@ -1,35 +1,30 @@
+// js/auth.js - Versión con tabla personalizada
+
 // Función para verificar el estado de autenticación
 function checkAuthStatus() {
-    // Verificar si hay un usuario en localStorage (simulando sesión)
-    const user = localStorage.getItem('pizzeriaUser');
     const authLink = document.getElementById('auth-link');
     const cartNavItem = document.getElementById('cart-nav-item');
     
-    if (user) {
-        // Si hay usuario logueado, mostrar información del perfil y carrito
-        const userData = JSON.parse(user);
+    const activeUser = checkActiveSession();
+    
+    if (activeUser) {
+        // Usuario autenticado
         authLink.innerHTML = `
         <div class="user-profile">
-            <a href="perfil.html" class="user-name">${userData.name}</a>
+            <a href="perfil.html" class="user-name">${activeUser.name}</a>
             <button onclick="logout()" class="btn-logout">Cerrar Sesión</button>
         </div>
         `;
         if (cartNavItem) cartNavItem.style.display = 'block';
     } else {
-        // Si no hay usuario, mostrar botón de login y ocultar carrito
+        // No autenticado
         authLink.innerHTML = '<a href="login.html" class="btn-login">INICIAR SESIÓN</a>';
         if (cartNavItem) cartNavItem.style.display = 'none';
     }
 }
 
-// Función para cerrar sesión
-function logout() {
-    localStorage.removeItem('pizzeriaDraftPizza');
-    localStorage.removeItem('pizzeriaUser');
-    localStorage.removeItem('cartItems');
-    if (typeof updateCartCount === 'function') updateCartCount(0);
-    checkAuthStatus(); // Actualizar la UI
-}
+// Hacer logout disponible globalmente
+window.logout = logout;
 
 // Verificar estado al cargar la página
 document.addEventListener('DOMContentLoaded', checkAuthStatus);
