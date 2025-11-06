@@ -201,13 +201,9 @@ function displayOrderHistory(orders) {
                     <strong>Total: $${total.toLocaleString()}</strong>
                 </div>
                 <div class="order-actions">
-                    <button class="btn-small" onclick="viewOrderDetails('${order.id}')">
-                        <i class="fas fa-eye"></i> Ver Detalles
-                    </button>
+                    
                     ${order.status === 'pending' ? `
-                    <button class="btn-small btn-cancel" onclick="cancelOrder('${order.id}')">
-                        <i class="fas fa-times"></i> Cancelar Pedido
-                    </button>
+                    
                     ` : ''}
                 </div>
             </div>
