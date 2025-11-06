@@ -105,7 +105,10 @@
 /* Estilos para direcciones */
 .address-item {
   background: rgba(35, 35, 35, 0.6);
-  border-radius: 8px;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
   padding: 1rem;
   margin-bottom: 1rem;
   border-left: 4px solid #333;
@@ -145,13 +148,15 @@
   gap: 0.5rem;
 }
 
-.no-address-message, .no-orders-message {
+.no-address-message,
+.no-orders-message {
   text-align: center;
   padding: 2rem;
   color: #888;
 }
 
-.no-address-message i, .no-orders-message i {
+.no-address-message i,
+.no-orders-message i {
   font-size: 3rem;
   margin-bottom: 1rem;
   color: #555;
@@ -180,7 +185,8 @@
   transition: all 0.3s ease;
 }
 
-.filter-btn.active, .filter-btn:hover {
+.filter-btn.active,
+.filter-btn:hover {
   background: #fada08;
   color: #000;
 }
@@ -193,7 +199,8 @@
 
 .order-item {
   background: rgba(35, 35, 35, 0.6);
-  border-radius: 8px;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
   padding: 1rem;
   border-left: 4px solid #fada08;
 }
@@ -342,11 +349,17 @@
   overflow-y: auto;
 }
 
-.order-info-section, .order-items-section, .shipping-info-section, .order-notes-section {
+.order-info-section,
+.order-items-section,
+.shipping-info-section,
+.order-notes-section {
   margin-bottom: 1.5rem;
 }
 
-.order-info-section h4, .order-items-section h4, .shipping-info-section h4, .order-notes-section h4 {
+.order-info-section h4,
+.order-items-section h4,
+.shipping-info-section h4,
+.order-notes-section h4 {
   color: #fada08;
   margin-bottom: 0.8rem;
   border-bottom: 1px solid #333;
@@ -374,12 +387,24 @@
   color: #fff;
 }
 
-.status-pending { color: #ffc107; }
-.status-confirmed { color: #2196f3; }
-.status-preparing { color: #9c27b0; }
-.status-ready { color: #4caf50; }
-.status-delivered { color: #4caf50; }
-.status-cancelled { color: #f44336; }
+.status-pending {
+  color: #ffc107;
+}
+.status-confirmed {
+  color: #2196f3;
+}
+.status-preparing {
+  color: #9c27b0;
+}
+.status-ready {
+  color: #4caf50;
+}
+.status-delivered {
+  color: #4caf50;
+}
+.status-cancelled {
+  color: #f44336;
+}
 
 .order-detail-item {
   display: flex;
@@ -441,30 +466,30 @@
     flex-direction: column;
     text-align: center;
   }
-  
+
   .profile-avatar {
     width: 80px;
     height: 80px;
     font-size: 2rem;
   }
-  
+
   .order-header {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .order-pizza {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.3rem;
   }
-  
+
   .order-detail-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
   }
-  
+
   .info-grid {
     grid-template-columns: 1fr;
   }
