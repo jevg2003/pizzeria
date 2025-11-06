@@ -426,3 +426,16 @@
 .custom-option:last-child {
   border-bottom: none;
 }
+
+/* Estilos para el select cuando tiene valor */
+.custom-select.has-value .custom-select__trigger {
+    border-color: var(--color-primary);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+/* Indicador visual de selección */
+.custom-option.selected {
+    background-color: rgba(250, 218, 8, 0.2);
+    color: var(--color-primary);
+    font-weight: 600;
+}
